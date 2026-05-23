@@ -1,0 +1,6 @@
+{
+  "name": "SmoothPlayer",
+  "description": "A fully native offline Android video player app with Material 3 Expressive design, smooth animations, and a modern mobile-first UI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
