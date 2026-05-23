@@ -79,9 +79,27 @@ fun MyApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
+    pastelTheme: PastelTheme? = null,
     content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
+        pastelTheme != null && pastelTheme.name != "Default" -> {
+            if (darkTheme) {
+                DarkColors.copy(
+                    primary = pastelTheme.color,
+                    primaryContainer = pastelTheme.color.copy(alpha = 0.5f),
+                    secondaryContainer = pastelTheme.color.copy(alpha = 0.2f),
+                    tertiary = pastelTheme.color
+                )
+            } else {
+                LightColors.copy(
+                    primary = pastelTheme.color,
+                    primaryContainer = pastelTheme.color.copy(alpha = 0.3f),
+                    secondaryContainer = pastelTheme.color.copy(alpha = 0.1f),
+                    tertiary = pastelTheme.color
+                )
+            }
+        }
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)

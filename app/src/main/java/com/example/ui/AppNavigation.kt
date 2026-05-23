@@ -1,9 +1,6 @@
 package com.example.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,9 +8,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(viewModel: MainViewModel) {
     val navController = rememberNavController()
-    val viewModel: MainViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = Screen.Home.route) {
         composable(Screen.Home.route) {
@@ -21,8 +17,14 @@ fun AppNavigation() {
                 viewModel = viewModel,
                 onVideoClick = { video ->
                     navController.navigate(Screen.Player.createRoute(video.uri.toString()))
+                },
+                onSettingsClick = {
+                    navController.navigate(Screen.Settings.route)
                 }
             )
+        }
+        composable(route = Screen.Settings.route) {
+            SettingsScreen(onNavigateUp = { navController.navigateUp() })
         }
         composable(
             route = Screen.Player.route,

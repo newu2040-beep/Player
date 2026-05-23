@@ -20,6 +20,13 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.media3.ui.AspectRatioFrameLayout
+
 @OptIn(UnstableApi::class)
 @Composable
 fun PlayerScreen(videoUri: String, onNavigateUp: () -> Unit) {
@@ -34,12 +41,15 @@ fun PlayerScreen(videoUri: String, onNavigateUp: () -> Unit) {
         }
     }
 
+    var resizeMode by remember { mutableStateOf(AspectRatioFrameLayout.RESIZE_MODE_FIT) }
+
     DisposableEffect(Unit) {
         val window = (context as? Activity)?.window
         if (window != null) {
             val insetsController = WindowCompat.getInsetsController(window, window.decorView)
             insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             insetsController.hide(WindowInsetsCompat.Type.systemBars())
+            window.decorView.keepScreenOn = true
         }
 
         onDispose {
@@ -47,6 +57,7 @@ fun PlayerScreen(videoUri: String, onNavigateUp: () -> Unit) {
             if (window != null) {
                 val insetsController = WindowCompat.getInsetsController(window, window.decorView)
                 insetsController.show(WindowInsetsCompat.Type.systemBars())
+                window.decorView.keepScreenOn = false
             }
         }
     }
@@ -58,10 +69,28 @@ fun PlayerScreen(videoUri: String, onNavigateUp: () -> Unit) {
                 useController = true
                 setShowNextButton(false)
                 setShowPreviousButton(false)
+                setShowFastForwardButton(true)
+                setShowRewindButton(true)
+                controllerShowTimeoutMs = 3000
+                controllerHideOnTouch = true
             }
+        },
+        update = { view ->
+            view.resizeMode = resizeMode
         },
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onDoubleTap = {
+                        resizeMode = when (resizeMode) {
+                            AspectRatioFrameLayout.RESIZE_MODE_FIT -> AspectRatioFrameLayout.RESIZE_MODE_FILL
+                            AspectRatioFrameLayout.RESIZE_MODE_FILL -> AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+                            else -> AspectRatioFrameLayout.RESIZE_MODE_FIT
+                        }
+                    }
+                )
+            }
     )
 }

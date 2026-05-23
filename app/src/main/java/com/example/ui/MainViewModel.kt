@@ -19,6 +19,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _isDarkTheme = MutableStateFlow(false)
+    val isDarkTheme: StateFlow<Boolean> = _isDarkTheme.asStateFlow()
+
     fun loadVideos() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -26,5 +29,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _videoList.value = videos
             _isLoading.value = false
         }
+    }
+
+    fun toggleTheme() {
+        _isDarkTheme.value = !_isDarkTheme.value
     }
 }
